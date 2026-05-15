@@ -1,16 +1,3 @@
-/**
- * Catálogo de erros do Portugol-Pizzaria.
- *
- * Toda mensagem de erro do interpretador passa por aqui. Mensagens são em PT-BR
- * e seguem padrão pedagógico (ver docs/error-catalog.md).
- *
- * Princípios:
- * - Nunca culpar o jogador
- * - Mostrar onde o erro aconteceu (linha/coluna)
- * - Sugerir a próxima ação
- * - Vocabulário simples, adequado a 12-14 anos
- */
-
 import type { SourceLocation } from './ast'
 
 export type ErrorKind = 'syntax' | 'type' | 'runtime' | 'domain' | 'warning'
@@ -23,10 +10,6 @@ export interface DSLError {
   hint?: string
   suggestion?: string
 }
-
-// ============================================================================
-// Erros de sintaxe (E001-E099)
-// ============================================================================
 
 export const SyntaxErrors = {
   indentMismatch: (loc: SourceLocation): DSLError => ({
@@ -89,10 +72,6 @@ export const SyntaxErrors = {
   }),
 } as const
 
-// ============================================================================
-// Erros de tipo (E100-E199)
-// ============================================================================
-
 export const TypeErrors = {
   invalidAddOperands: (loc: SourceLocation, leftType: string, rightType: string): DSLError => ({
     kind: 'type',
@@ -145,10 +124,6 @@ export const TypeErrors = {
   }),
 } as const
 
-// ============================================================================
-// Erros de runtime (E200-E299)
-// ============================================================================
-
 export const RuntimeErrors = {
   undefinedVariable: (loc: SourceLocation, name: string): DSLError => ({
     kind: 'runtime',
@@ -199,10 +174,6 @@ export const RuntimeErrors = {
   }),
 } as const
 
-// ============================================================================
-// Eventos de domínio (D001-D099) — não interrompem execução, são avisos
-// ============================================================================
-
 export const DomainEvents = {
   hitWall: (loc: SourceLocation, direction: string): DSLError => ({
     kind: 'domain',
@@ -245,10 +216,6 @@ export const DomainEvents = {
   }),
 } as const
 
-/**
- * Formata um erro como string legível (útil para logging/debug).
- * Para apresentação no editor, use o objeto DSLError diretamente.
- */
 export function formatError(err: DSLError): string {
   let out = `[${err.code}] ${err.message}`
   if (err.hint) out += `\n   💡 Dica: ${err.hint}`

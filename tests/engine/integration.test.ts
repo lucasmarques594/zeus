@@ -1,8 +1,3 @@
-/**
- * Smoke test de integração: parse + interpreter + world.
- * Verifica que o nível 0 (mover uma casa) é vencível com a solução de referência.
- */
-
 import { describe, it, expect } from 'vitest'
 import { parse } from '../../src/engine/parser'
 import { Interpreter } from '../../src/engine/interpreter'
@@ -64,7 +59,6 @@ describe('integração engine+world', () => {
   })
 
   it('feature bloqueada não causa parse error mas é detectada à parte', () => {
-    // Apenas parsing — a checagem de keywords bloqueadas é feita pela App
     const code = 'enquanto verdadeiro:\n    mover("leste")'
     const { errors } = parse(code)
     expect(errors).toHaveLength(0) // parser aceita, app filtra

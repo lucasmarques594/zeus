@@ -1,10 +1,3 @@
-/**
- * Parser do Portugol-Pizzaria.
- *
- * Implementação recursiva descendente, gerando a AST definida em ast.ts.
- * Mensagens de erro são em PT-BR e pedagógicas.
- */
-
 import type {
   Program,
   Statement,
@@ -49,7 +42,6 @@ export class Parser {
     const firstToken = this.tokens[0]
     const startLoc = { line: firstToken?.line ?? 1, column: firstToken?.column ?? 1 }
 
-    // Pula NEWLINEs iniciais
     while (this.peek().type === 'NEWLINE') this.advance()
 
     while (this.peek().type !== 'EOF') {
@@ -64,7 +56,6 @@ export class Parser {
           throw e
         }
       }
-      // Pula NEWLINEs entre statements
       while (this.peek().type === 'NEWLINE') this.advance()
     }
 
@@ -76,10 +67,6 @@ export class Parser {
 
     return { ast, errors: this.errors }
   }
-
-  // ============================================================================
-  // Statements
-  // ============================================================================
 
   private parseStatement(): Statement | null {
     const tok = this.peek()
@@ -241,7 +228,6 @@ export class Parser {
 
   private parseAssignmentOrExpr(): Statement {
     const expr = this.parseExpression()
-    // Se vem ASSIGN depois, é atribuição
     if (this.peek().type === 'ASSIGN') {
       if (expr.type !== 'Identifier') {
         throw new ParseError({
@@ -271,7 +257,6 @@ export class Parser {
   }
 
   private parseBlock(): Statement[] {
-    // Pula a newline depois do ':'
     while (this.peek().type === 'NEWLINE') this.advance()
     this.expect('INDENT', 'esperava um bloco indentado (4 espaços) abaixo')
     const stmts: Statement[] = []
@@ -301,10 +286,6 @@ export class Parser {
     }
     return stmts
   }
-
-  // ============================================================================
-  // Expressões (precedência: ou < e < not < comparação < +/- < */% < unário)
-  // ============================================================================
 
   private parseExpression(): Expression {
     return this.parseOr()
@@ -482,7 +463,6 @@ export class Parser {
           loc: { line: tok.line, column: tok.column },
           name: tok.value,
         }
-        // Chamada de função?
         if (this.peek().type === 'LPAREN') {
           this.advance()
           const args: Expression[] = []
@@ -521,10 +501,6 @@ export class Parser {
     }
   }
 
-  // ============================================================================
-  // Helpers
-  // ============================================================================
-
   private peek(): Token {
     return this.tokens[this.pos] ?? {
       type: 'EOF',
@@ -562,7 +538,6 @@ export class Parser {
   }
 
   private synchronize(): void {
-    // Pula tokens até achar um delimitador seguro (newline ou keyword de top-level)
     while (this.peek().type !== 'EOF') {
       const t = this.peek().type
       if (t === 'NEWLINE' || t === 'DEDENT') {

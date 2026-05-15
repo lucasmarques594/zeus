@@ -1,6 +1,4 @@
-/**
- * Tipos centrais do mundo do jogo da pizzaria.
- */
+
 
 export type Direction = 'norte' | 'sul' | 'leste' | 'oeste'
 
@@ -13,7 +11,7 @@ export type TileType =
   | 'ingrediente'
   | 'caixa'
   | 'lixo'
-  | 'goal' // alvo (níveis simples de movimento)
+  | 'goal' 
 
 export type IngredientType = 'massa' | 'molho' | 'queijo' | 'calabresa' | 'frango'
 
@@ -21,8 +19,8 @@ export type PizzaState = 'crua' | 'cozinhando' | 'pronta' | 'queimada'
 
 export interface Pizza {
   state: PizzaState
-  flavor: IngredientType // sabor do topping principal
-  cookTicks: number // quantos ticks já cozinhou
+  flavor: IngredientType 
+  cookTicks: number 
 }
 
 export interface Tile {
@@ -31,7 +29,6 @@ export interface Tile {
   type: TileType
   ingredient?: IngredientType
   tableNumber?: number
-  // Para balcão: pode ter pizza pronta empilhada
   pizzaReady?: boolean
 }
 

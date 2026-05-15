@@ -1,16 +1,7 @@
-/**
- * Lexer do Portugol-Pizzaria.
- *
- * Escrito à mão (sem dependência externa) para ter controle total sobre
- * indentação significativa, palavras-chave com/sem acento, e mensagens de erro.
- */
-
 export type TokenType =
-  // Literais
   | 'NUMBER'
   | 'STRING'
   | 'IDENT'
-  // Palavras-chave
   | 'SE'
   | 'SENAO'
   | 'SENAO_SE'
@@ -29,7 +20,6 @@ export type TokenType =
   | 'VERDADEIRO'
   | 'FALSO'
   | 'NULO'
-  // Operadores
   | 'EQ'
   | 'NEQ'
   | 'LT'
@@ -42,12 +32,10 @@ export type TokenType =
   | 'MUL'
   | 'DIV'
   | 'MOD'
-  // Pontuação
   | 'LPAREN'
   | 'RPAREN'
   | 'COMMA'
   | 'COLON'
-  // Estrutura
   | 'NEWLINE'
   | 'INDENT'
   | 'DEDENT'
@@ -67,7 +55,6 @@ export interface LexError {
   hint?: string
 }
 
-// Normaliza acentos para comparação de palavras-chave
 function normalize(s: string): string {
   return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
@@ -100,7 +87,7 @@ export class Lexer {
   private tokens: Token[] = []
   private errors: LexError[] = []
   private indentStack: number[] = [0]
-  private parenDepth = 0 // dentro de parênteses, NEWLINE/INDENT são ignorados
+  private parenDepth = 0 
   private atLineStart = true
 
   constructor(private readonly source: string) {}
@@ -130,7 +117,6 @@ export class Lexer {
       }
 
       if (ch === '#') {
-        // Comentário até fim da linha
         while (this.pos < this.source.length && this.source[this.pos] !== '\n') {
           this.advance()
         }
@@ -154,7 +140,6 @@ export class Lexer {
 
       if (this.readOperator()) continue
 
-      // Caractere desconhecido
       this.errors.push({
         line: this.line,
         column: this.column,
@@ -164,7 +149,6 @@ export class Lexer {
       this.advance()
     }
 
-    // Fim do arquivo: gerar DEDENTs pra zerar a pilha
     if (this.tokens.length > 0 && this.tokens[this.tokens.length - 1].type !== 'NEWLINE') {
       this.addToken('NEWLINE', '\n')
     }
@@ -178,7 +162,6 @@ export class Lexer {
   }
 
   private handleIndentation(): void {
-    // Mede a indentação da linha atual
     let indent = 0
     while (this.pos < this.source.length) {
       const ch = this.source[this.pos]
@@ -186,14 +169,13 @@ export class Lexer {
         indent++
         this.advance()
       } else if (ch === '\t') {
-        indent += 4 // tab = 4 espaços
+        indent += 4 
         this.advance()
       } else {
         break
       }
     }
 
-    // Linha vazia ou só comentário? Ignora indentação
     if (this.pos >= this.source.length) return
     const ch = this.source[this.pos]
     if (ch === '\n' || ch === '#') return
@@ -222,7 +204,7 @@ export class Lexer {
   private readString(): void {
     const startLine = this.line
     const startCol = this.column
-    this.advance() // pula "
+    this.advance() 
     let value = ''
     while (this.pos < this.source.length && this.source[this.pos] !== '"') {
       if (this.source[this.pos] === '\n') {
@@ -257,7 +239,7 @@ export class Lexer {
       })
       return
     }
-    this.advance() // pula "
+    this.advance()
     this.tokens.push({ type: 'STRING', value, line: startLine, column: startCol })
   }
 
@@ -303,7 +285,6 @@ export class Lexer {
     const ch = this.source[this.pos]
     const next = this.source[this.pos + 1]
 
-    // Operadores compostos primeiro
     if (ch === '=' && next === '=') {
       this.advance()
       this.advance()
@@ -329,7 +310,6 @@ export class Lexer {
       return true
     }
 
-    // Simples
     const single: Record<string, TokenType> = {
       '=': 'ASSIGN',
       '<': 'LT',

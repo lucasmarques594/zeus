@@ -1,13 +1,3 @@
-/**
- * Camada de persistência local (localStorage).
- *
- * Salva código por nível e melhor pontuação. Estruturada como repository
- * pra facilitar migração futura: a UI conversa só com essa interface;
- * trocar localStorage por KRATOS no futuro é mudar a implementação aqui.
- *
- * Convenção de chaves: 'pcg.<categoria>.<id>' (pcg = pizzaria code game).
- */
-
 const KEY_PREFIX = 'pcg'
 const SCHEMA_VERSION = 1
 
@@ -16,7 +6,7 @@ export interface LevelProgress {
   completed: boolean
   bestScore: number
   bestTicks: number
-  completedAt: string // ISO
+  completedAt: string 
   attempts: number
 }
 
@@ -27,10 +17,7 @@ interface StorageEnvelope<T> {
 }
 
 class LocalRepository {
-  /**
-   * Verifica se localStorage está disponível e funcional.
-   * Trata casos: modo privado (Safari), cota cheia, desabilitado.
-   */
+
   private available(): boolean {
     try {
       const probe = `${KEY_PREFIX}.__probe__`
@@ -49,7 +36,6 @@ class LocalRepository {
       if (!raw) return null
       const env = JSON.parse(raw) as StorageEnvelope<T>
       if (env.version !== SCHEMA_VERSION) {
-        // Migração futura: aqui vai a lógica de upgrade
         return null
       }
       return env.data
@@ -69,14 +55,10 @@ class LocalRepository {
       localStorage.setItem(`${KEY_PREFIX}.${key}`, JSON.stringify(env))
       return true
     } catch {
-      // QuotaExceeded ou similar — falha silenciosa, não trava o jogo
       return false
     }
   }
 
-  // ============================================================================
-  // Código do jogador por nível
-  // ============================================================================
 
   saveCode(levelId: number, source: string): void {
     this.write(`code.${levelId}`, source)
@@ -86,18 +68,10 @@ class LocalRepository {
     return this.read<string>(`code.${levelId}`)
   }
 
-  // ============================================================================
-  // Progresso por nível
-  // ============================================================================
-
   getProgress(levelId: number): LevelProgress | null {
     return this.read<LevelProgress>(`progress.${levelId}`)
   }
 
-  /**
-   * Marca nível como completo. Mantém o MELHOR score (não sobrescreve com pior).
-   * Retorna se este foi um novo recorde pessoal.
-   */
   recordCompletion(levelId: number, score: number, ticks: number): { newBest: boolean } {
     const current = this.getProgress(levelId)
     const attempts = (current?.attempts ?? 0) + 1
@@ -114,7 +88,6 @@ class LocalRepository {
     return { newBest }
   }
 
-  /** Incrementa o contador de tentativas (chamado a cada Executar). */
   recordAttempt(levelId: number): void {
     const current = this.getProgress(levelId)
     if (current) {
@@ -132,7 +105,6 @@ class LocalRepository {
     }
   }
 
-  /** Retorna todos os níveis completados. */
   getAllCompleted(): number[] {
     if (!this.available()) return []
     const completed: number[] = []
@@ -147,7 +119,6 @@ class LocalRepository {
     return completed.sort((a, b) => a - b)
   }
 
-  /** Limpa todo o progresso. Útil pra debug ou "começar do zero". */
   clearAll(): void {
     if (!this.available()) return
     const keys: string[] = []

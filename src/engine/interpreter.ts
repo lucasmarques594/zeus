@@ -1,15 +1,3 @@
-/**
- * Interpretador da DSL Portugol-Pizzaria.
- *
- * Implementação como AST walker baseado em generator function.
- * Cada `yield` corresponde a um "tick" do mundo do jogo.
- *
- * Características:
- * - Step-by-step: o caller controla quando avançar (suporta pause, speed control)
- * - Sandbox: só executa nodes da AST que reconhecemos
- * - Limites: ticks, recursão e iterações são monitorados
- */
-
 import type {
   Program,
   Statement,
@@ -43,7 +31,6 @@ export type StepResult =
   | { kind: 'done'; ticksUsed: number }
   | { kind: 'error'; error: DSLError; ticksUsed: number }
 
-// Sentinelas para controle de fluxo (sem usar exceções pra performance)
 const BREAK = Symbol('break')
 const CONTINUE = Symbol('continue')
 
@@ -79,7 +66,6 @@ export class Interpreter {
     private readonly limits: ExecutionLimits = DEFAULT_LIMITS
   ) {}
 
-  /** Avança um passo. Retorna 'tick', 'done' ou 'error'. */
   step(): StepResult {
     if (this.finished) {
       return { kind: 'done', ticksUsed: this.ticksUsed }
@@ -103,7 +89,6 @@ export class Interpreter {
     }
   }
 
-  /** Executa até terminar e retorna o resultado final. */
   runToCompletion(): StepResult {
     let last: StepResult = { kind: 'done', ticksUsed: 0 }
     while (!this.finished) {
@@ -113,12 +98,10 @@ export class Interpreter {
     return last
   }
 
-  /** Linha atualmente em execução (1-indexed). */
   getCurrentLine(): number {
     return this.currentLine
   }
 
-  /** Snapshot do escopo atual (útil pro painel de variáveis). */
   getScope(): Record<string, DSLValue> {
     const out: Record<string, DSLValue> = {}
     for (const [k, v] of this.globals) out[k] = v
@@ -129,17 +112,11 @@ export class Interpreter {
     return out
   }
 
-  /** Ticks consumidos até agora. */
   getTicksUsed(): number {
     return this.ticksUsed
   }
 
-  // ============================================================================
-  // Execução
-  // ============================================================================
-
   private *execute(): Generator<StepResult, StepResult, void> {
-    // Pré-pass: registra todas as declarações de função
     for (const stmt of this.program.body) {
       if (stmt.type === 'FunctionDeclaration') {
         this.functions.set(stmt.name.name, {
@@ -150,12 +127,10 @@ export class Interpreter {
       }
     }
 
-    // Executa statements top-level
     for (const stmt of this.program.body) {
       if (stmt.type === 'FunctionDeclaration') continue
       const signal = yield* this.execStmt(stmt)
       if (signal && typeof signal === 'object' && 'kind' in signal && signal.kind === 'return') {
-        // Return em top-level: aceita silenciosamente, encerra
         break
       }
       if (signal === BREAK || signal === CONTINUE) {
@@ -244,7 +219,6 @@ export class Interpreter {
       }
 
       case 'FunctionDeclaration': {
-        // Já registrado no pré-pass; nada a fazer aqui
         return undefined
       }
 
@@ -277,7 +251,6 @@ export class Interpreter {
     const name = call.callee.name
     const args = call.args.map((a) => this.eval(a))
 
-    // Função do usuário
     const userFn = this.functions.get(name)
     if (userFn) {
       if (this.callStack.length >= this.limits.maxRecursionDepth) {
@@ -298,15 +271,13 @@ export class Interpreter {
       try {
         const sig = yield* this.execBlock(userFn.body)
         if (sig && typeof sig === 'object' && sig.kind === 'return') {
-          // valor de retorno disponível via .value mas funções não usam aqui
         }
       } finally {
         this.callStack.pop()
       }
-      return 0 // funções do usuário não consomem tick (cada built-in dentro consome)
+      return 0 
     }
 
-    // Built-in
     if (this.world.hasBuiltin(name)) {
       const { ticks } = this.world.callBuiltin(name, args)
       this.ticksUsed += ticks
@@ -324,10 +295,6 @@ export class Interpreter {
       hint: 'Verifique se você digitou o nome certo. Olhe a lista de comandos disponíveis.',
     })
   }
-
-  // ============================================================================
-  // Avaliação de expressões (pura, não consome ticks)
-  // ============================================================================
 
   private eval(expr: Expression): DSLValue {
     this.bumpIter()
@@ -396,8 +363,6 @@ export class Interpreter {
         }
       }
       case 'CallExpression': {
-        // Chamada de função usada como expressão
-        // Funções do usuário podem retornar valor
         const name = expr.callee.name
         const args = expr.args.map((a) => this.eval(a))
         const userFn = this.functions.get(name)
@@ -449,11 +414,6 @@ export class Interpreter {
     return null
   }
 
-  /**
-   * Versão síncrona do execBlock, usada quando uma função do usuário
-   * é chamada DENTRO de uma expressão (não pode yield).
-   * Built-ins ainda são chamados, mas sem pausar entre ticks.
-   */
   private runBlockSync(body: Statement[]): ControlSignal | undefined {
     for (const s of body) {
       const sig = this.execStmtSync(s)
@@ -517,10 +477,6 @@ export class Interpreter {
     }
   }
 
-  // ============================================================================
-  // Variáveis
-  // ============================================================================
-
   private getVariable(id: Identifier): DSLValue {
     if (this.callStack.length > 0) {
       const local = this.callStack[this.callStack.length - 1]
@@ -550,10 +506,6 @@ export class Interpreter {
     }
   }
 }
-
-// ============================================================================
-// Helpers
-// ============================================================================
 
 function toBool(v: DSLValue): boolean {
   if (v === null) return false

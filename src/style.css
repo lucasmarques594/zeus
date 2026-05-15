@@ -1,10 +1,3 @@
-/* ============================================================================
- * Pizzaria Code — Identidade visual
- *
- * Aesthetic: pixel-art arcade meets retro-pizzeria. Cor dominante tijolo/dourado.
- * Tipografia: monoespaçada pra código + "pixel font" pro logo.
- * ============================================================================ */
-
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap');
 
 :root {
@@ -143,6 +136,29 @@ code {
   color: var(--text-dim);
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.btn-back-menu {
+  padding: 8px 16px;
+  background: var(--bg-elev-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-back-menu:hover {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  transform: translateX(-2px);
+}
+
+.btn-back-menu:active {
+  transform: translateX(-1px);
 }
 
 .sidebar {

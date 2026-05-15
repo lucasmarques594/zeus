@@ -1,18 +1,8 @@
-/**
- * Definições dos níveis do jogo.
- *
- * Versão MVP com 5 níveis funcionais. Os outros 6 (até 10) ficam como TODO
- * pra adicionar conforme o jogador testa e dá feedback.
- *
- * Especificação completa: ../../docs/levels.json
- */
 
 import type { LevelDefinition } from './types'
 
 export const LEVELS: LevelDefinition[] = [
-  // ============================================================================
-  // NÍVEL 0 - Primeiro programa
-  // ============================================================================
+
   {
     id: 0,
     title: 'Olá, pizzaria!',
@@ -201,6 +191,147 @@ export const LEVELS: LevelDefinition[] = [
       'Cada iteração precisa terminar com o personagem em condições de fazer outra.',
     ],
   },
+
+  // ============================================================================
+// NÍVEL 6 - Condicionais
+// ============================================================================
+{
+  id: 6,
+  title: 'Tem pedido aí?',
+  subtitle: "Decisões com 'se'",
+  concept: 'Programas podem tomar decisões baseadas em condições',
+  objective: 'Só entregue pizza se existir um pedido na fila.',
+  story:
+    "Às vezes não há clientes esperando. Um bom entregador verifica antes de sair andando igual um maluco pela pizzaria. Use 'se' para decidir quando atender.",
+
+  availableFunctions: [
+    'mover',
+    'virar',
+    'pegar',
+    'entregar',
+    'proximo_pedido',
+    'escrever',
+  ],
+
+  availableKeywords: ['se'],
+
+  maxTicks: 100,
+
+  scoreFormula: '1000 - ticks * 5',
+
+  grid: {
+    width: 7,
+    height: 5,
+
+    playerStart: {
+      x: 3,
+      y: 2,
+      facing: 'norte',
+    },
+
+    tiles: [
+      {
+        x: 3,
+        y: 1,
+        type: 'balcao',
+        item: 'pizza_pronta',
+      },
+
+      {
+        x: 1,
+        y: 4,
+        type: 'mesa',
+        tableNumber: 1,
+      },
+    ],
+
+    orderQueue: ['1,calabresa'],
+  },
+
+  winCondition: 'all_orders_delivered',
+
+  referenceSolution:
+    'se proximo_pedido() != nulo:\n    pegar()\n    mover("sul")\n    mover("sul")\n    mover("oeste")\n    mover("oeste")\n    entregar(1)\n',
+
+  hints: [
+    "Use 'se CONDICAO:' para executar algo apenas quando necessário.",
+    'proximo_pedido() retorna nulo quando não há pedidos.',
+    '!= significa "diferente de".',
+    'O bloco do se precisa estar indentado com 4 espaços.',
+  ],
+},
+
+{
+  id: 7,
+  title: 'Automatizando trabalho',
+  subtitle: 'Criando funções',
+  concept: 'Funções permitem reutilizar código',
+
+  objective: 'Criar uma função para buscar pizza automaticamente.',
+
+  story:
+    'Você já escreveu o mesmo código várias vezes. Agora é hora de automatizar.',
+
+  availableFunctions: [
+    'mover',
+    'pegar',
+    'entregar',
+    'proximo_pedido',
+  ],
+
+  availableKeywords: [
+    'funcao',
+    'retornar',
+    'enquanto',
+  ],
+
+  maxTicks: 200,
+
+  scoreFormula: '1000 - ticks * 2',
+
+  grid: {
+    width: 7,
+    height: 5,
+
+    playerStart: {
+      x: 3,
+      y: 2,
+      facing: 'norte',
+    },
+
+    tiles: [
+      {
+        x: 3,
+        y: 1,
+        type: 'balcao',
+        item: 'pizza_infinita',
+      },
+
+      {
+        x: 3,
+        y: 4,
+        type: 'mesa',
+        tableNumber: 1,
+      },
+    ],
+
+    orderQueue: [
+      '1,calabresa',
+      '1,frango',
+      '1,calabresa',
+    ],
+  },
+
+  winCondition: 'all_orders_delivered',
+
+  referenceSolution:
+    'funcao atender():\n    pegar()\n    mover("sul")\n    mover("sul")\n    entregar(1)\n    mover("norte")\n    mover("norte")\n\nenquanto proximo_pedido() != nulo:\n    atender()\n',
+
+  hints: [
+    "Crie funções com 'funcao nome():'",
+    'Funções ajudam a evitar código repetido.',
+  ],
+},
 ]
 
 export function getLevel(id: number): LevelDefinition | null {

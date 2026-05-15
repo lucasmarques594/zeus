@@ -1,14 +1,3 @@
-/**
- * Cliente HTTP para o backend KRATOS.
- *
- * Endpoints utilizados (a serem criados no KRATOS):
- *   POST /auth/login        → autenticação
- *   POST /runs              → submissão de score
- *   GET  /runs/me           → histórico do jogador
- *   GET  /leaderboard/:gameId → top N global por nível
- *
- * Ver: ../KRATOS/backend (repo separado)
- */
 
 const DEFAULT_BASE_URL =
   (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_KRATOS_URL ??
@@ -23,7 +12,7 @@ export interface SubmitRunPayload {
   pizzasBurned: number
   sourceCode: string
   dslVersion: string
-  completedAt: string // ISO
+  completedAt: string 
 }
 
 export interface LeaderboardEntry {

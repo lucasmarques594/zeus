@@ -1,12 +1,3 @@
-/**
- * Definições de nós da AST do Portugol-Pizzaria.
- *
- * A árvore sintática abstrata é o resultado do parser e a entrada do interpretador.
- * Todos os nós têm metadata de localização (linha/coluna) para mensagens de erro.
- *
- * Ver: docs/dsl-spec.md seção 3 (Gramática EBNF)
- */
-
 export interface SourceLocation {
   line: number
   column: number
@@ -16,18 +7,10 @@ export interface NodeBase {
   loc: SourceLocation
 }
 
-// ============================================================================
-// Programa (raiz)
-// ============================================================================
-
 export interface Program extends NodeBase {
   type: 'Program'
   body: Statement[]
 }
-
-// ============================================================================
-// Statements
-// ============================================================================
 
 export type Statement =
   | Assignment
@@ -50,8 +33,8 @@ export interface IfStatement extends NodeBase {
   type: 'IfStatement'
   test: Expression
   consequent: Statement[]
-  alternates: { test: Expression; body: Statement[] }[] // senao_se
-  alternate: Statement[] | null // senao
+  alternates: { test: Expression; body: Statement[] }[] 
+  alternate: Statement[] | null
 }
 
 export interface WhileStatement extends NodeBase {
@@ -93,10 +76,6 @@ export interface ExpressionStatement extends NodeBase {
   type: 'ExpressionStatement'
   expression: Expression
 }
-
-// ============================================================================
-// Expressões
-// ============================================================================
 
 export type Expression =
   | NumberLiteral
@@ -164,9 +143,5 @@ export interface CallExpression extends NodeBase {
   callee: Identifier
   args: Expression[]
 }
-
-// ============================================================================
-// Helpers
-// ============================================================================
 
 export type AnyNode = Program | Statement | Expression

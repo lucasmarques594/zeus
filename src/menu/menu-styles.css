@@ -1,0 +1,549 @@
+/* ========================================
+   Menu Principal - Tema Pizzaria Dark
+   Usa as mesmas CSS vars de style.css
+   ======================================== */
+
+.menu-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(251, 191, 36, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(249, 115, 22, 0.06) 0%, transparent 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 2rem;
+  box-sizing: border-box;
+  animation: menuFadeIn 0.4s ease-out;
+}
+
+@keyframes menuFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.menu-content {
+  background: var(--bg-elev);
+  border: 2px solid var(--accent);
+  border-radius: 16px;
+  padding: 3rem;
+  box-shadow:
+    0 0 40px rgba(251, 191, 36, 0.08),
+    var(--shadow-lg);
+  max-width: 600px;
+  width: 100%;
+  animation: menuSlideUp 0.5s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stripe accent top */
+.menu-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--accent) 0,
+    var(--accent) 8px,
+    var(--accent-hot) 8px,
+    var(--accent-hot) 16px,
+    var(--accent-cool) 16px,
+    var(--accent-cool) 24px
+  );
+}
+
+.menu-content-wide {
+  max-width: 1000px;
+}
+
+@keyframes menuSlideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Header do Menu */
+.menu-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.menu-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.menu-logo-icon {
+  font-size: 3.5rem;
+  filter: drop-shadow(0 0 12px var(--accent));
+  animation: menuIconBounce 2s ease-in-out infinite;
+}
+
+@keyframes menuIconBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-8px) rotate(5deg); }
+}
+
+.menu-logo-text {
+  font-family: var(--font-pixel);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+  text-shadow: 0 0 16px rgba(251, 191, 36, 0.3);
+  letter-spacing: 0.02em;
+}
+
+.menu-logo-accent {
+  color: var(--accent);
+}
+
+.menu-title {
+  font-family: var(--font-pixel);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.5rem 0;
+}
+
+.menu-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+/* Botões do Menu */
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.2rem 2rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--bg-elev-2);
+  color: var(--text);
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.05), transparent);
+  transition: left 0.5s ease;
+}
+
+.menu-btn:hover::before {
+  left: 100%;
+}
+
+.menu-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  border-color: var(--accent);
+}
+
+.menu-btn:active {
+  transform: translateY(-1px);
+}
+
+.menu-btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.menu-btn-primary:hover {
+  background: var(--accent-hot);
+  border-color: var(--accent-hot);
+}
+
+.menu-btn-secondary {
+  background: var(--bg-elev-2);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.menu-btn-secondary:hover {
+  background: var(--border);
+  border-color: var(--text-dim);
+  color: var(--text);
+}
+
+.menu-btn-icon {
+  font-size: 1.4rem;
+}
+
+.menu-btn-text {
+  font-weight: 600;
+}
+
+/* Footer do Menu */
+.menu-footer {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.menu-credits {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  margin: 0;
+  font-family: var(--font-mono);
+}
+
+/* Ações do Menu */
+.menu-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* ========================================
+   Leaderboard - Estilos (Dark)
+   ======================================== */
+
+.leaderboard-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  background: var(--bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+}
+
+.leaderboard-table {
+  background: var(--bg);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.leaderboard-header {
+  display: grid;
+  grid-template-columns: 80px 2fr 1.5fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--bg-elev-2);
+  border-bottom: 2px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 80px 2fr 1.5fr 1fr 1fr;
+  gap: 1rem;
+  padding: 0.85rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.leaderboard-row:hover {
+  background: var(--bg-elev-2);
+}
+
+.leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-col {
+  display: flex;
+  align-items: center;
+}
+
+.leaderboard-level {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent);
+  font-family: var(--font-pixel);
+}
+
+.leaderboard-title {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.leaderboard-score {
+  font-weight: 700;
+  color: var(--success);
+  font-size: 1rem;
+}
+
+.leaderboard-ticks {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.leaderboard-attempts {
+  color: var(--text-dim);
+}
+
+/* ========================================
+   Configurações - Estilos (Dark)
+   ======================================== */
+
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.settings-section {
+  background: var(--bg);
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.settings-section-title {
+  margin: 0 0 1rem 0;
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+
+.settings-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.settings-control:last-child {
+  margin-bottom: 0;
+}
+
+.settings-label {
+  font-weight: 600;
+  color: var(--text-dim);
+  min-width: 180px;
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+}
+
+.settings-slider {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-elev-2);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.settings-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.settings-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: var(--accent-hot);
+}
+
+.settings-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.settings-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  background: var(--accent-hot);
+}
+
+.settings-value {
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 50px;
+  text-align: right;
+  font-size: 0.95rem;
+  font-family: var(--font-mono);
+}
+
+/* Botões gerais (override para dark) */
+.menu-container .btn {
+  padding: 0.65rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.menu-container .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.menu-container .btn:active {
+  transform: translateY(0);
+}
+
+.menu-container .btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.menu-container .btn-primary:hover {
+  background: var(--accent-hot);
+  border-color: var(--accent-hot);
+}
+
+.menu-container .btn-secondary {
+  background: var(--bg-elev-2);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.menu-container .btn-secondary:hover {
+  background: var(--border);
+}
+
+.menu-container .btn-success {
+  background: var(--success);
+  color: var(--bg);
+  border-color: var(--success);
+}
+
+.menu-container .btn-success:hover {
+  filter: brightness(1.15);
+}
+
+.menu-container .btn-danger {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+.menu-container .btn-danger:hover {
+  filter: brightness(1.15);
+}
+
+.menu-container .btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.menu-container .btn-ghost:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .menu-container {
+    padding: 1rem;
+  }
+
+  .menu-content {
+    padding: 2rem;
+  }
+
+  .menu-logo-text {
+    font-size: 1.2rem;
+  }
+
+  .menu-logo-icon {
+    font-size: 2.5rem;
+  }
+
+  .menu-btn {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .leaderboard-header,
+  .leaderboard-row {
+    grid-template-columns: 60px 1.5fr 1fr 0.8fr 0.8fr;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .settings-control {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .settings-label {
+    min-width: auto;
+  }
+
+  .settings-value {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-header,
+  .leaderboard-row {
+    font-size: 0.7rem;
+    padding: 0.5rem;
+  }
+
+  .menu-actions {
+    flex-direction: column;
+  }
+}

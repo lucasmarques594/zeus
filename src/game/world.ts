@@ -1,12 +1,4 @@
-/**
- * Implementação do mundo do jogo da pizzaria.
- *
- * Esta classe implementa `WorldHandle` (do interpreter) e mantém todo o estado
- * do mundo: grid, jogador, fornos, mesas, pedidos, dinheiro.
- *
- * Cada chamada de built-in modifica o estado, retorna um valor e informa
- * quantos ticks consumiu.
- */
+
 
 import type { WorldHandle, DSLValue } from '@engine/interpreter'
 import type {
@@ -32,12 +24,9 @@ export class GameWorld implements WorldHandle {
 
   constructor(private readonly level: LevelDefinition) {
     this.state = this.initFromLevel(level)
-    this.allowedBuiltins = new Set([...level.availableFunctions, 'escrever']) // escrever sempre disponível
+    this.allowedBuiltins = new Set([...level.availableFunctions, 'escrever'])
   }
 
-  // ============================================================================
-  // WorldHandle interface
-  // ============================================================================
 
   hasBuiltin(name: string): boolean {
     return this.allowedBuiltins.has(name) || BUILTIN_REGISTRY[name] !== undefined
@@ -67,14 +56,10 @@ export class GameWorld implements WorldHandle {
     this.log.push(msg)
   }
 
-  // ============================================================================
-  // Setup
-  // ============================================================================
 
   private initFromLevel(level: LevelDefinition): WorldState {
     const { width, height, playerStart, tiles, orderQueue } = level.grid
 
-    // Inicializa grid com chão
     const grid: Tile[][] = []
     for (let y = 0; y < height; y++) {
       const row: Tile[] = []
@@ -93,7 +78,6 @@ export class GameWorld implements WorldHandle {
       tile.type = t.type as Tile['type']
       if (t.ingredient) tile.ingredient = t.ingredient as IngredientType
       if (t.tableNumber !== undefined) tile.tableNumber = t.tableNumber
-      // Balcão com item significa pizza pronta no balcão
       if (t.type === 'balcao' && (t.item === 'pizza_pronta' || t.item === 'pizza_infinita')) {
         tile.pizzaReady = true
         ;(tile as Tile & { infinite?: boolean }).infinite = t.item === 'pizza_infinita'
@@ -121,7 +105,6 @@ export class GameWorld implements WorldHandle {
       }
     })
 
-    // Atribui primeira ordem das mesas que estão na fila
     for (const ord of orders) {
       const mesa = mesas.find((m) => m.tableNumber === ord.tableNumber)
       if (mesa && !mesa.waitingFor) {

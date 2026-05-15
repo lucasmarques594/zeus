@@ -10,13 +10,14 @@ import { LEVELS, getLevel } from '@game/levels'
 import type { LevelDefinition } from '@game/types'
 import { localRepo } from '@api/local-repo'
 import { CanvasRenderer } from './renderer'
+import { AudioManager } from '@/audio/audio-manager'
 
 type AppPhase = 'idle' | 'running' | 'paused' | 'done' | 'error'
 
 interface AppState {
   currentLevelId: number
   phase: AppPhase
-  speed: number // ticks por segundo
+  speed: number 
   world: GameWorld | null
   interpreter: Interpreter | null
   renderer: CanvasRenderer | null
@@ -36,6 +37,7 @@ export class App {
   private varsEl!: HTMLDivElement
   private tickCounterEl!: HTMLDivElement
   private lastScopeHash = ''
+  private audioManager: AudioManager
 
   constructor() {
     this.state = {
@@ -48,6 +50,7 @@ export class App {
       lastStepTime: 0,
       highlightLine: null,
     }
+    this.audioManager = AudioManager.getInstance()
   }
 
   mount(root: HTMLElement): void {
@@ -78,6 +81,12 @@ export class App {
     get<HTMLButtonElement>('#btn-reset').addEventListener('click', () => this.resetLevel())
     get<HTMLButtonElement>('#btn-solution').addEventListener('click', () => this.showSolution())
     get<HTMLButtonElement>('#btn-hint').addEventListener('click', () => this.showHint())
+    get<HTMLButtonElement>('#btn-back-to-menu-game')?.addEventListener('click', () => {
+      this.audioManager.playSfx('select')
+      if (confirm('Deseja voltar ao menu principal? O progresso não salvo será perdido.')) {
+        window.location.reload()
+      }
+    })
 
     const speed = get<HTMLInputElement>('#speed')
     speed.addEventListener('input', () => {
@@ -85,13 +94,11 @@ export class App {
       ;(document.querySelector('#speed-label') as HTMLElement).textContent = `${this.state.speed}x`
     })
 
-    // Atalho: Ctrl+Enter executa
     this.editorEl.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault()
         this.run()
       }
-      // Tab insere 4 espaços
       if (e.key === 'Tab') {
         e.preventDefault()
         const start = this.editorEl.selectionStart
@@ -102,7 +109,6 @@ export class App {
       }
     })
 
-    // Autosave do código com debounce (700ms depois da última digitação)
     let autosaveTimer: number | null = null
     this.editorEl.addEventListener('input', () => {
       if (autosaveTimer !== null) window.clearTimeout(autosaveTimer)
@@ -111,12 +117,10 @@ export class App {
       }, 700)
     })
 
-    // Salva ao trocar de aba/fechar
     window.addEventListener('beforeunload', () => {
       localRepo.saveCode(this.state.currentLevelId, this.editorEl.value)
     })
 
-    // Troca de abas no painel de output
     document.querySelectorAll('.tab[data-tab]').forEach((tab) => {
       tab.addEventListener('click', () => {
         const target = (tab as HTMLElement).dataset.tab
@@ -147,7 +151,6 @@ export class App {
   }
 
   private loadLevel(id: number): void {
-    // Salva código do nível atual antes de trocar (autosave)
     if (this.state.world && this.editorEl?.value !== undefined) {
       const prevId = this.state.currentLevelId
       if (prevId !== id && this.editorEl.value.trim().length > 0) {
@@ -162,13 +165,11 @@ export class App {
     this.state.world = new GameWorld(level)
     this.state.renderer!.resize(this.state.world.state)
 
-    // Recorde pessoal, se houver
     const progress = localRepo.getProgress(id)
     const recordBadge = progress?.completed
       ? `<span class="record-badge">🏆 Melhor: ${progress.bestScore} pts (${progress.bestTicks} ticks)</span>`
       : ''
 
-    // Atualiza UI
     this.storyEl.innerHTML = `
       <h2>Nível ${level.id}: ${level.title} ${recordBadge}</h2>
       <p class="subtitle">${level.subtitle}</p>
@@ -181,11 +182,9 @@ export class App {
       </p>
     `
 
-    // Highlight nível atual
     document.querySelectorAll('.level-btn').forEach((b) => b.classList.remove('active'))
     document.querySelector(`.level-btn[data-id="${id}"]`)?.classList.add('active')
 
-    // Carrega código salvo (se houver), senão deixa vazio
     const savedCode = localRepo.loadCode(id)
     this.editorEl.value = savedCode ?? ''
     this.editorEl.placeholder = `# Nível ${id}: ${level.title}\n# Escreva seu código aqui e clique em ▶ Executar\n# Atalho: Ctrl+Enter`
@@ -205,30 +204,28 @@ export class App {
     this.clearLog()
     const source = this.editorEl.value
 
-    // Salva código + incrementa tentativas
     localRepo.saveCode(this.state.currentLevelId, source)
     localRepo.recordAttempt(this.state.currentLevelId)
 
-    // Parse
     const { ast, errors } = parse(source)
     if (errors.length > 0 || !ast) {
       this.showErrors(errors)
       this.setStatus('error', `${errors.length} erro(s)`)
+      this.audioManager.playSfx('error')
       return
     }
 
-    // Verifica features bloqueadas
     const level = getLevel(this.state.currentLevelId)
     if (level) {
       const blockedErrors = this.checkBlockedFeatures(source, level)
       if (blockedErrors.length > 0) {
         this.showErrors(blockedErrors)
         this.setStatus('error', 'Comando bloqueado')
+        this.audioManager.playSfx('error')
         return
       }
     }
 
-    // Reset world
     const lv = getLevel(this.state.currentLevelId)
     if (!lv) return
     this.state.world = new GameWorld(lv)
@@ -290,7 +287,6 @@ export class App {
 
     if (result.kind === 'tick') {
       this.state.highlightLine = result.line
-      // Log mensagens do mundo
       if (this.state.world) {
         const log = this.state.world.getLog()
         for (const msg of log) this.appendLog(msg)
@@ -312,18 +308,16 @@ export class App {
     const ticks = this.state.interpreter?.getTicksUsed() ?? 0
     if (won) {
       const level = getLevel(this.state.currentLevelId)!
-      // Usa o tick em que a vitória foi ALCANÇADA, não o tick final.
-      // Isso evita penalizar quem completa o objetivo cedo e o programa
-      // continua rodando depois.
       const winTicks = this.state.world.state.victoryAtTick || ticks
       const score = computeScore(level, winTicks, this.state.world)
       this.appendLog(`✅ Nível completo em ${winTicks} ticks! Score: ${score}`)
       this.setStatus('done', `✅ Vitória! Score: ${score}`)
       this.markLevelCompleted(this.state.currentLevelId, score, winTicks)
-      // TODO: aqui faria a chamada pra kratosClient.submitRun(...)
+      this.audioManager.playSfx('success')
     } else {
       this.appendLog(`❌ Programa terminou mas o objetivo não foi atingido. Ticks: ${ticks}`)
       this.setStatus('done', 'Tente de novo')
+      this.audioManager.playSfx('error')
     }
   }
 
@@ -332,7 +326,6 @@ export class App {
     if (newBest) {
       this.appendLog(`🏆 Novo recorde pessoal: ${score} pontos!`)
     }
-    // Atualiza a sidebar com o check
     this.buildLevelList()
     document.querySelector(`.level-btn[data-id="${levelId}"]`)?.classList.add('active')
   }
@@ -341,12 +334,10 @@ export class App {
     if (!this.state.world || !this.state.renderer) return
     this.state.renderer.render(this.state.world.state)
 
-    // Highlight da linha no editor (visual via CSS variable)
     if (this.state.highlightLine !== null) {
       this.editorEl.style.setProperty('--highlight-line', String(this.state.highlightLine))
     }
 
-    // Painel de variáveis e contador de ticks
     this.renderVarsAndTicks()
   }
 
@@ -360,7 +351,6 @@ export class App {
       return
     }
     const scope = interp.getScope()
-    // Adiciona dados do mundo como "variáveis especiais" pro jogador entender o estado
     const world = this.state.world?.state
     const enriched: Array<{ name: string; value: string; kind: 'user' | 'world' }> = []
 
@@ -395,7 +385,6 @@ export class App {
       })
     }
 
-    // Hash simples pra evitar re-renderização desnecessária
     const hash = enriched.map((v) => `${v.name}=${v.value}`).join('|')
     if (hash === this.lastScopeHash) return
     this.lastScopeHash = hash
@@ -420,10 +409,6 @@ export class App {
       </table>
     `
   }
-
-  // ============================================================================
-  // Helpers de UI
-  // ============================================================================
 
   private appendLog(msg: string): void {
     const div = document.createElement('div')
@@ -464,7 +449,6 @@ export class App {
   private checkBlockedFeatures(source: string, level: LevelDefinition | null): DSLError[] {
     if (!level) return []
     const errors: DSLError[] = []
-    // Verifica keywords bloqueadas
     const allKeywords: { name: string; pattern: RegExp; unlockNote: string }[] = [
       { name: 'se', pattern: /\bse\s/, unlockNote: 'nível 5' },
       { name: 'enquanto', pattern: /\benquanto\b/, unlockNote: 'nível 5+' },
@@ -488,7 +472,6 @@ export class App {
 
 function computeScore(level: LevelDefinition | null, ticks: number, world: GameWorld): number {
   if (!level) return 0
-  // Fórmula simplificada — implementação completa interpretaria scoreFormula
   const delivered = world.state.deliveredCount
   if (level.scoreFormula.includes('pedidos')) {
     return Math.max(0, delivered * 100 - ticks)
@@ -511,11 +494,6 @@ function formatValue(v: unknown): string {
   }
   return String(v)
 }
-
-// ============================================================================
-// Template HTML
-// ============================================================================
-
 const TEMPLATE = `
 <div class="app">
   <header class="header">
@@ -526,6 +504,9 @@ const TEMPLATE = `
     <div class="header-info">
       <span class="header-tag">Aprenda a programar em Portugol</span>
     </div>
+    <button id="btn-back-to-menu-game" class="btn-back-menu" title="Voltar ao menu">
+      ← Menu
+    </button>
   </header>
   <aside class="sidebar">
     <h3 class="sidebar-title">Níveis</h3>

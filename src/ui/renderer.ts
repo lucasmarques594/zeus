@@ -1,10 +1,3 @@
-/**
- * Renderer Canvas 2D para o mundo da pizzaria.
- *
- * Pixel art procedural: tudo desenhado com formas geométricas, sem assets externos.
- * Isso mantém o bundle leve e o jogo funciona offline.
- */
-
 import type { WorldState, Tile, Direction } from '@game/types'
 
 const TILE_SIZE = 64
@@ -46,7 +39,6 @@ export class CanvasRenderer {
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('Canvas 2D context não disponível')
     this.ctx = ctx
-    // Pixel-perfect rendering
     this.ctx.imageSmoothingEnabled = false
   }
 
@@ -67,19 +59,16 @@ export class CanvasRenderer {
     ctx.fillStyle = COLORS.bg
     ctx.fillRect(0, 0, world.width * TILE_SIZE, world.height * TILE_SIZE)
 
-    // Renderiza tiles
     for (let y = 0; y < world.height; y++) {
       for (let x = 0; x < world.width; x++) {
         this.drawTile(world.tiles[y][x], x, y)
       }
     }
 
-    // Fornos (sobrepõe o tile)
     for (const f of world.fornos) {
       this.drawForno(f.x, f.y, f.pizza)
     }
 
-    // Highlight (tile em destaque, ex: tile em frente ao jogador)
     if (highlightTile) {
       ctx.strokeStyle = '#fbbf2455'
       ctx.lineWidth = 3
@@ -91,7 +80,6 @@ export class CanvasRenderer {
       )
     }
 
-    // Jogador
     this.drawPlayer(world.player.x, world.player.y, world.player.facing, world.player.holding)
   }
 
@@ -100,7 +88,6 @@ export class CanvasRenderer {
     const x = gx * TILE_SIZE
     const y = gy * TILE_SIZE
 
-    // Piso base (xadrez sutil)
     const isAlt = (gx + gy) % 2 === 0
     ctx.fillStyle = isAlt ? COLORS.floor : COLORS.floorAlt
     ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE)
@@ -114,7 +101,6 @@ export class CanvasRenderer {
         ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE)
         ctx.fillStyle = COLORS.wallTop
         ctx.fillRect(x, y, TILE_SIZE, 8)
-        // Padrão de tijolos
         ctx.fillStyle = '#171717'
         for (let row = 0; row < 4; row++) {
           const offset = row % 2 === 0 ? 0 : TILE_SIZE / 4
@@ -130,7 +116,6 @@ export class CanvasRenderer {
         break
       }
       case 'goal': {
-        // Alvo dourado pulsante
         const cx = x + TILE_SIZE / 2
         const cy = y + TILE_SIZE / 2
         const t = Date.now() / 400
@@ -156,7 +141,6 @@ export class CanvasRenderer {
         ctx.fillRect(x + 4, y + 8, TILE_SIZE - 8, TILE_SIZE - 16)
         ctx.fillStyle = COLORS.balcaoTop
         ctx.fillRect(x + 4, y + 8, TILE_SIZE - 8, 12)
-        // Pizza pronta no balcão
         if (tile.pizzaReady) {
           this.drawPizzaIcon(x + TILE_SIZE / 2, y + TILE_SIZE / 2 + 4, 14)
         }
@@ -165,7 +149,6 @@ export class CanvasRenderer {
       case 'mesa': {
         const cx = x + TILE_SIZE / 2
         const cy = y + TILE_SIZE / 2
-        // Mesa circular
         ctx.fillStyle = COLORS.mesa
         ctx.beginPath()
         ctx.arc(cx, cy, TILE_SIZE / 2 - 8, 0, Math.PI * 2)
@@ -174,7 +157,6 @@ export class CanvasRenderer {
         ctx.beginPath()
         ctx.arc(cx, cy - 2, TILE_SIZE / 2 - 10, 0, Math.PI * 2)
         ctx.fill()
-        // Número da mesa
         if (tile.tableNumber !== undefined) {
           ctx.fillStyle = '#fef3c7'
           ctx.font = 'bold 18px monospace'
@@ -213,16 +195,13 @@ export class CanvasRenderer {
   private drawIngredient(x: number, y: number, type: string): void {
     const { ctx } = this
     const cx = x + TILE_SIZE / 2
-    // Caixote
     ctx.fillStyle = '#78350f'
     ctx.fillRect(x + 8, y + 16, TILE_SIZE - 16, TILE_SIZE - 24)
     ctx.fillStyle = '#92400e'
     ctx.fillRect(x + 8, y + 16, TILE_SIZE - 16, 4)
-    // Conteúdo
     const color = (COLORS as Record<string, string>)[type] || '#94a3b8'
     ctx.fillStyle = color
     ctx.fillRect(x + 14, y + 24, TILE_SIZE - 28, TILE_SIZE - 38)
-    // Label
     ctx.fillStyle = '#fef3c7'
     ctx.font = 'bold 9px monospace'
     ctx.textAlign = 'center'
@@ -234,15 +213,12 @@ export class CanvasRenderer {
     const { ctx } = this
     const x = gx * TILE_SIZE
     const y = gy * TILE_SIZE
-    // Corpo do forno
     ctx.fillStyle = COLORS.forno
     ctx.fillRect(x + 6, y + 6, TILE_SIZE - 12, TILE_SIZE - 12)
     ctx.fillStyle = '#581c0c'
     ctx.fillRect(x + 6, y + 6, TILE_SIZE - 12, 6)
-    // Boca do forno
     ctx.fillStyle = pizza ? COLORS.fornoGlow : '#1c1917'
     ctx.fillRect(x + 14, y + 20, TILE_SIZE - 28, TILE_SIZE - 36)
-    // Pizza dentro?
     if (pizza) {
       const cx = x + TILE_SIZE / 2
       const cy = y + TILE_SIZE / 2 + 4
@@ -254,7 +230,6 @@ export class CanvasRenderer {
         this.drawPizzaIcon(cx, cy, 8, '#1c1917')
       }
     }
-    // Letras FORNO
     ctx.fillStyle = '#fef3c7'
     ctx.font = 'bold 8px monospace'
     ctx.textAlign = 'center'
@@ -285,26 +260,21 @@ export class CanvasRenderer {
     const cx = gx * TILE_SIZE + TILE_SIZE / 2
     const cy = gy * TILE_SIZE + TILE_SIZE / 2
 
-    // Sombra
     ctx.fillStyle = '#00000055'
     ctx.beginPath()
     ctx.ellipse(cx, cy + 18, 16, 5, 0, 0, Math.PI * 2)
     ctx.fill()
 
-    // Corpo (avental laranja)
     ctx.fillStyle = '#ea580c'
     ctx.fillRect(cx - 12, cy - 4, 24, 22)
-    // Listra branca do avental
     ctx.fillStyle = '#fef3c7'
     ctx.fillRect(cx - 12, cy - 4, 24, 4)
 
-    // Cabeça
     ctx.fillStyle = COLORS.playerSkin
     ctx.beginPath()
     ctx.arc(cx, cy - 12, 10, 0, Math.PI * 2)
     ctx.fill()
 
-    // Chapéu de chef
     ctx.fillStyle = '#fef3c7'
     ctx.fillRect(cx - 10, cy - 22, 20, 6)
     ctx.beginPath()
@@ -317,7 +287,6 @@ export class CanvasRenderer {
     ctx.arc(cx + 6, cy - 22, 6, 0, Math.PI * 2)
     ctx.fill()
 
-    // Olhos (direção)
     ctx.fillStyle = COLORS.playerEye
     let eyeDx = 0
     let eyeDy = 0
@@ -338,7 +307,6 @@ export class CanvasRenderer {
     ctx.fillRect(cx - 4 + eyeDx, cy - 14 + eyeDy, 2, 3)
     ctx.fillRect(cx + 2 + eyeDx, cy - 14 + eyeDy, 2, 3)
 
-    // Indicador de direção (seta sutil)
     ctx.fillStyle = '#fbbf2488'
     ctx.beginPath()
     const dist = 28
@@ -367,7 +335,6 @@ export class CanvasRenderer {
     ctx.closePath()
     ctx.fill()
 
-    // Item segurado (em cima da cabeça)
     if (holding) {
       ctx.fillStyle = '#fef3c755'
       ctx.fillRect(cx - 10, cy - 36, 20, 12)
