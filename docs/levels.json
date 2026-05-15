@@ -1,0 +1,339 @@
+{
+  "$schema": "./levels.schema.json",
+  "version": "0.1.0",
+  "description": "Definição dos 11 níveis (0-10) do Portugol-Pizzaria. Cada nível introduz um conceito por vez com curva pedagógica suave.",
+  "levels": [
+    {
+      "id": 0,
+      "title": "Olá, pizzaria!",
+      "subtitle": "Sua primeira instrução",
+      "concept": "Um programa é uma sequência de comandos executados pelo computador",
+      "objective": "Mover o personagem uma única casa para o leste.",
+      "story": "Bem-vindo à pizzaria! Antes de aprender a fazer pizza, você precisa aprender a se mover. Mande o entregador andar uma casa para o leste.",
+      "availableFunctions": ["mover"],
+      "availableKeywords": [],
+      "maxTicks": 10,
+      "scoreFormula": "1000 - ticks * 10",
+      "grid": {
+        "width": 5,
+        "height": 3,
+        "playerStart": { "x": 1, "y": 1, "facing": "leste" },
+        "tiles": [
+          { "x": 2, "y": 1, "type": "goal" }
+        ]
+      },
+      "winCondition": "player_on_tile_type:goal",
+      "referenceSolution": "mover(\"leste\")\n",
+      "hints": [
+        "Use a função mover() passando uma direção como texto.",
+        "Direções aceitas: \"norte\", \"sul\", \"leste\", \"oeste\".",
+        "Não esqueça das aspas em torno da direção."
+      ]
+    },
+    {
+      "id": 1,
+      "title": "Caminho até a mesa",
+      "subtitle": "Sequências de comandos",
+      "concept": "Comandos são executados na ordem em que aparecem",
+      "objective": "Levar o entregador até a mesa do cliente seguindo um caminho.",
+      "story": "Um cliente está esperando na mesa. Guie o entregador até ela passo a passo.",
+      "availableFunctions": ["mover", "virar"],
+      "availableKeywords": [],
+      "maxTicks": 50,
+      "scoreFormula": "1000 - ticks * 20",
+      "grid": {
+        "width": 7,
+        "height": 5,
+        "playerStart": { "x": 0, "y": 2, "facing": "leste" },
+        "tiles": [
+          { "x": 6, "y": 0, "type": "goal" },
+          { "x": 1, "y": 0, "type": "wall" },
+          { "x": 1, "y": 1, "type": "wall" },
+          { "x": 5, "y": 3, "type": "wall" },
+          { "x": 5, "y": 4, "type": "wall" }
+        ]
+      },
+      "winCondition": "player_on_tile_type:goal",
+      "referenceSolution": "mover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nvirar(\"norte\")\nmover(\"norte\")\nmover(\"norte\")\nmover(\"leste\")\nmover(\"leste\")\n",
+      "hints": [
+        "Cada comando move o personagem uma única casa.",
+        "Use virar() para mudar a direção sem se mover.",
+        "Olhe o mapa antes de planejar a rota."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "O caminho longo",
+      "subtitle": "Quando repetir cansa...",
+      "concept": "Repetir comandos manualmente é tedioso e cheio de erros",
+      "objective": "Mover o personagem 15 casas para o leste. Sim, é repetitivo de propósito.",
+      "story": "A pizzaria é grande. Para chegar ao depósito, são 15 passos para o leste. Por enquanto, escreva mover() 15 vezes — no próximo nível, você vai aprender um jeito melhor.",
+      "availableFunctions": ["mover"],
+      "availableKeywords": [],
+      "maxTicks": 30,
+      "scoreFormula": "1000 - ticks * 10",
+      "grid": {
+        "width": 17,
+        "height": 3,
+        "playerStart": { "x": 0, "y": 1, "facing": "leste" },
+        "tiles": [
+          { "x": 15, "y": 1, "type": "goal" }
+        ]
+      },
+      "winCondition": "player_on_tile_type:goal",
+      "referenceSolution": "mover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\nmover(\"leste\")\n",
+      "hints": [
+        "Sim, este nível é tedioso! Isso é proposital.",
+        "Tente perceber o padrão: o mesmo comando se repete várias vezes.",
+        "No próximo nível, você vai aprender uma forma mais inteligente."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Loops salvam o dia",
+      "subtitle": "Repetição com 'para'",
+      "concept": "Estruturas de repetição executam um bloco várias vezes",
+      "objective": "Mover 15 casas para o leste, mas agora usando um único loop `para`.",
+      "story": "Lembra do nível anterior, escrevendo mover() 15 vezes? Agora você vai fazer a mesma coisa em apenas duas linhas usando o comando `para`.",
+      "availableFunctions": ["mover"],
+      "availableKeywords": ["para", "de", "ate"],
+      "maxTicks": 30,
+      "scoreFormula": "1000 - linhas * 50 - ticks * 5",
+      "grid": {
+        "width": 17,
+        "height": 3,
+        "playerStart": { "x": 0, "y": 1, "facing": "leste" },
+        "tiles": [
+          { "x": 15, "y": 1, "type": "goal" }
+        ]
+      },
+      "winCondition": "player_on_tile_type:goal",
+      "referenceSolution": "para i de 1 ate 15:\n    mover(\"leste\")\n",
+      "hints": [
+        "A sintaxe é: para VARIAVEL de INICIO ate FIM:",
+        "O bloco do loop é indentado com 4 espaços.",
+        "A variável i conta de 1 até 15, e o bloco executa 15 vezes."
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Pegar e largar",
+      "subtitle": "Interação com o mundo",
+      "concept": "Algumas funções modificam o estado do mundo, outras consultam",
+      "objective": "Pegar uma pizza no balcão e entregar à mesa 1.",
+      "story": "Tem uma pizza pronta no balcão e um cliente esperando na mesa 1. Pegue a pizza e leve até ele.",
+      "availableFunctions": ["mover", "virar", "pegar", "soltar", "entregar"],
+      "availableKeywords": [],
+      "maxTicks": 50,
+      "scoreFormula": "1000 - ticks * 20",
+      "grid": {
+        "width": 7,
+        "height": 5,
+        "playerStart": { "x": 3, "y": 2, "facing": "norte" },
+        "tiles": [
+          { "x": 3, "y": 1, "type": "balcao", "item": "pizza_pronta" },
+          { "x": 1, "y": 4, "type": "mesa", "tableNumber": 1 }
+        ]
+      },
+      "winCondition": "table_served:1",
+      "referenceSolution": "mover(\"norte\")\npegar()\nvirar(\"sul\")\nmover(\"sul\")\nmover(\"sul\")\nvirar(\"oeste\")\nmover(\"oeste\")\nmover(\"oeste\")\nentregar(1)\n",
+      "hints": [
+        "pegar() pega o item da casa em frente ao personagem.",
+        "Você precisa estar virado para o item antes de pegar.",
+        "entregar(1) entrega o que está segurando à mesa 1."
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Tomando decisões",
+      "subtitle": "Estruturas condicionais com 'se'",
+      "concept": "Programas podem tomar decisões diferentes baseadas em condições",
+      "objective": "Atender o pedido apenas se houver um pedido na fila.",
+      "story": "Às vezes não tem cliente esperando. Se você for até a mesa sem um pedido, vai estar perdendo tempo. Use `se` para verificar antes.",
+      "availableFunctions": ["mover", "virar", "pegar", "entregar", "proximo_pedido"],
+      "availableKeywords": ["se"],
+      "maxTicks": 30,
+      "scoreFormula": "1000 - ticks * 30",
+      "grid": {
+        "width": 5,
+        "height": 5,
+        "playerStart": { "x": 2, "y": 2, "facing": "norte" },
+        "tiles": [
+          { "x": 2, "y": 1, "type": "balcao", "item": "pizza_pronta" },
+          { "x": 1, "y": 4, "type": "mesa", "tableNumber": 1 }
+        ],
+        "orderQueue": ["1,calabresa"]
+      },
+      "winCondition": "table_served:1",
+      "referenceSolution": "se proximo_pedido() != nulo:\n    mover(\"norte\")\n    pegar()\n    virar(\"sul\")\n    mover(\"sul\")\n    mover(\"sul\")\n    virar(\"oeste\")\n    mover(\"oeste\")\n    entregar(1)\n",
+      "hints": [
+        "proximo_pedido() retorna o próximo pedido ou nulo se não houver.",
+        "A sintaxe é: se CONDICAO:",
+        "Use != para comparar 'diferente de'."
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Atender enquanto puder",
+      "subtitle": "Loop condicional com 'enquanto'",
+      "concept": "Repetir enquanto uma condição for verdadeira",
+      "objective": "Atender todos os pedidos da fila, sejam quantos forem.",
+      "story": "A fila de pedidos pode ter 1, 5 ou 20 pedidos — você não sabe. Use `enquanto` para atender todos eles, sem importar a quantidade.",
+      "availableFunctions": ["mover", "virar", "pegar", "entregar", "proximo_pedido"],
+      "availableKeywords": ["enquanto"],
+      "maxTicks": 200,
+      "scoreFormula": "pedidos_atendidos * 100 - ticks * 2",
+      "grid": {
+        "width": 5,
+        "height": 5,
+        "playerStart": { "x": 2, "y": 2, "facing": "norte" },
+        "tiles": [
+          { "x": 2, "y": 1, "type": "balcao", "item": "pizza_infinita" },
+          { "x": 1, "y": 4, "type": "mesa", "tableNumber": 1 }
+        ],
+        "orderQueue": ["1,calabresa", "1,frango", "1,calabresa", "1,frango", "1,calabresa"]
+      },
+      "winCondition": "all_orders_delivered",
+      "referenceSolution": "enquanto proximo_pedido() != nulo:\n    mover(\"norte\")\n    pegar()\n    virar(\"sul\")\n    mover(\"sul\")\n    mover(\"sul\")\n    virar(\"oeste\")\n    mover(\"oeste\")\n    entregar(1)\n    virar(\"leste\")\n    mover(\"leste\")\n    virar(\"norte\")\n    mover(\"norte\")\n    mover(\"norte\")\n",
+      "hints": [
+        "enquanto continua executando o bloco até a condição ficar falsa.",
+        "Não esqueça de voltar à posição inicial dentro do loop!",
+        "Cada iteração precisa terminar com o personagem em condições de fazer outra."
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Múltiplas mesas",
+      "subtitle": "Variáveis e dados compostos",
+      "concept": "Guardar dados em variáveis para usar depois",
+      "objective": "Atender pedidos de várias mesas diferentes.",
+      "story": "Agora os clientes estão em mesas diferentes! O pedido vem no formato 'numero_mesa,sabor'. Você vai precisar separar essa informação para entregar à mesa certa.",
+      "availableFunctions": ["mover", "virar", "pegar", "entregar", "proximo_pedido", "escrever"],
+      "availableKeywords": ["enquanto", "se"],
+      "maxTicks": 300,
+      "scoreFormula": "pedidos_atendidos * 200 - ticks * 2",
+      "grid": {
+        "width": 7,
+        "height": 5,
+        "playerStart": { "x": 3, "y": 2, "facing": "norte" },
+        "tiles": [
+          { "x": 3, "y": 1, "type": "balcao", "item": "pizza_infinita" },
+          { "x": 1, "y": 4, "type": "mesa", "tableNumber": 1 },
+          { "x": 3, "y": 4, "type": "mesa", "tableNumber": 2 },
+          { "x": 5, "y": 4, "type": "mesa", "tableNumber": 3 }
+        ],
+        "orderQueue": ["1,calabresa", "3,frango", "2,calabresa", "1,frango", "3,calabresa"]
+      },
+      "winCondition": "all_orders_delivered",
+      "referenceSolution": "# Solução simplificada: assume que sempre temos a mesma sequência\n# Soluções mais elegantes usam funções (próximo nível)\nenquanto proximo_pedido() != nulo:\n    pedido = proximo_pedido()\n    mover(\"norte\")\n    pegar()\n    virar(\"sul\")\n    mover(\"sul\")\n    mover(\"sul\")\n    # Aqui o jogador precisa descobrir como extrair a mesa do pedido\n    entregar(1)\n",
+      "hints": [
+        "Guarde o pedido em uma variável: pedido = proximo_pedido()",
+        "Use escrever(pedido) para ver o formato no console.",
+        "Pense: como você descobre o número da mesa olhando o pedido?"
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Reusar é elegante",
+      "subtitle": "Funções definidas pelo jogador",
+      "concept": "Funções permitem dar nome a um pedaço de lógica e reusá-lo",
+      "objective": "Atender pedidos usando uma função própria que entrega à mesa correta.",
+      "story": "Cansado de copiar código? Funções são pedaços reutilizáveis. Crie uma função `atender(mesa)` que faz todo o trabalho de buscar e entregar.",
+      "availableFunctions": ["mover", "virar", "pegar", "entregar", "proximo_pedido"],
+      "availableKeywords": ["enquanto", "se", "funcao", "retornar"],
+      "maxTicks": 300,
+      "scoreFormula": "pedidos_atendidos * 200 - linhas_codigo * 10 - ticks * 2",
+      "grid": {
+        "width": 7,
+        "height": 5,
+        "playerStart": { "x": 3, "y": 2, "facing": "norte" },
+        "tiles": [
+          { "x": 3, "y": 1, "type": "balcao", "item": "pizza_infinita" },
+          { "x": 1, "y": 4, "type": "mesa", "tableNumber": 1 },
+          { "x": 5, "y": 4, "type": "mesa", "tableNumber": 3 }
+        ],
+        "orderQueue": ["1,calabresa", "3,frango", "1,frango", "3,calabresa"]
+      },
+      "winCondition": "all_orders_delivered",
+      "referenceSolution": "funcao buscar_pizza():\n    mover(\"norte\")\n    pegar()\n    virar(\"sul\")\n    mover(\"sul\")\n    mover(\"sul\")\n\nfuncao voltar_ao_balcao():\n    virar(\"norte\")\n    mover(\"norte\")\n    mover(\"norte\")\n\nenquanto proximo_pedido() != nulo:\n    buscar_pizza()\n    entregar(1)\n    voltar_ao_balcao()\n",
+      "hints": [
+        "Defina uma função com: funcao NOME():",
+        "Indente o corpo da função com 4 espaços.",
+        "Funções tornam o código mais curto e mais fácil de entender."
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Sabores diferentes",
+      "subtitle": "Condicionais encadeadas com senao_se",
+      "concept": "Múltiplos caminhos baseados em diferentes condições",
+      "objective": "Pegar o ingrediente certo dependendo do sabor pedido.",
+      "story": "Os clientes pedem sabores diferentes. Cada sabor está em uma posição diferente do balcão. Use `senao_se` para escolher a direção correta.",
+      "availableFunctions": ["mover", "virar", "pegar", "entregar", "proximo_pedido", "ingrediente_em", "peca_em_frente", "escrever"],
+      "availableKeywords": ["enquanto", "se", "senao", "senao_se", "funcao", "retornar"],
+      "maxTicks": 400,
+      "scoreFormula": "pedidos_atendidos * 200 - ticks * 2",
+      "grid": {
+        "width": 9,
+        "height": 5,
+        "playerStart": { "x": 4, "y": 2, "facing": "norte" },
+        "tiles": [
+          { "x": 2, "y": 1, "type": "balcao", "item": "pizza_calabresa" },
+          { "x": 4, "y": 1, "type": "balcao", "item": "pizza_frango" },
+          { "x": 6, "y": 1, "type": "balcao", "item": "pizza_margherita" },
+          { "x": 1, "y": 4, "type": "mesa", "tableNumber": 1 },
+          { "x": 7, "y": 4, "type": "mesa", "tableNumber": 2 }
+        ],
+        "orderQueue": ["1,calabresa", "2,frango", "1,margherita", "2,calabresa"]
+      },
+      "winCondition": "all_orders_delivered",
+      "referenceSolution": "funcao pegar_pizza(sabor):\n    se sabor == \"calabresa\":\n        virar(\"oeste\")\n        mover(\"oeste\")\n        mover(\"oeste\")\n    senao_se sabor == \"frango\":\n        # já estamos na frente\n        escrever(\"pegando frango\")\n    senao_se sabor == \"margherita\":\n        virar(\"leste\")\n        mover(\"leste\")\n        mover(\"leste\")\n    virar(\"norte\")\n    pegar()\n",
+      "hints": [
+        "se / senao_se / senao formam uma cadeia de decisões.",
+        "Apenas um dos blocos é executado, o primeiro que tiver condição verdadeira.",
+        "Use a função para encapsular a lógica de pegar cada sabor."
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Mestre cuca",
+      "subtitle": "Composição: montar pizza do zero",
+      "concept": "Combinando todos os conceitos anteriores",
+      "objective": "Montar pizzas do zero (massa + molho + queijo + sabor), assar no forno e entregar — tudo isso sem deixar queimar.",
+      "story": "Não tem mais pizza pronta no balcão. Você precisa montar cada uma do zero, assar no forno (sem queimar!) e entregar. Esse é o desafio final.",
+      "availableFunctions": [
+        "mover", "virar", "pegar", "soltar", "entregar",
+        "proximo_pedido", "ingrediente_em", "peca_em_frente",
+        "montar_pizza", "colocar_no_forno", "tirar_do_forno", "estado_forno",
+        "esperar", "escrever"
+      ],
+      "availableKeywords": ["enquanto", "se", "senao", "senao_se", "funcao", "retornar", "para", "de", "ate"],
+      "maxTicks": 1000,
+      "scoreFormula": "pedidos_atendidos * 300 - pizzas_queimadas * 100 - ticks",
+      "grid": {
+        "width": 11,
+        "height": 7,
+        "playerStart": { "x": 5, "y": 3, "facing": "norte" },
+        "tiles": [
+          { "x": 1, "y": 1, "type": "ingrediente", "ingredient": "massa" },
+          { "x": 3, "y": 1, "type": "ingrediente", "ingredient": "molho" },
+          { "x": 5, "y": 1, "type": "ingrediente", "ingredient": "queijo" },
+          { "x": 7, "y": 1, "type": "ingrediente", "ingredient": "calabresa" },
+          { "x": 9, "y": 1, "type": "ingrediente", "ingredient": "frango" },
+          { "x": 5, "y": 5, "type": "forno" },
+          { "x": 1, "y": 6, "type": "mesa", "tableNumber": 1 },
+          { "x": 9, "y": 6, "type": "mesa", "tableNumber": 2 }
+        ],
+        "orderQueue": ["1,calabresa", "2,frango", "1,frango", "2,calabresa"]
+      },
+      "winCondition": "all_orders_delivered",
+      "referenceSolution": "# Solução de referência (~ 30 linhas)\n# O jogador é livre para estruturar como quiser\nfuncao pegar_ingrediente(nome):\n    # navega até o ingrediente e pega\n    # implementação depende do mapa\n    escrever(\"pegando: \")\n    escrever(nome)\n\nfuncao montar_e_assar(sabor):\n    pegar_ingrediente(\"massa\")\n    pegar_ingrediente(\"molho\")\n    pegar_ingrediente(\"queijo\")\n    pegar_ingrediente(sabor)\n    montar_pizza()\n    colocar_no_forno()\n    enquanto estado_forno() != \"pronto\":\n        esperar(1)\n    tirar_do_forno()\n\nenquanto proximo_pedido() != nulo:\n    pedido = proximo_pedido()\n    montar_e_assar(\"calabresa\")\n    entregar(1)\n",
+      "hints": [
+        "Esse nível combina TUDO o que você aprendeu. Vá com calma.",
+        "Comece fazendo uma pizza só, sem loop. Depois adicione o while.",
+        "estado_forno() permite saber quando tirar a pizza sem queimar.",
+        "Funções vão deixar seu código muito mais legível aqui."
+      ]
+    }
+  ]
+}

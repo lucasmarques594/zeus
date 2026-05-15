@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "exactOptionalPropertyTypes": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@engine/*": ["src/engine/*"],
+      "@game/*": ["src/game/*"],
+      "@ui/*": ["src/ui/*"],
+      "@api/*": ["src/api/*"]
+    }
+  },
+  "include": ["src", "tests"]
+}
