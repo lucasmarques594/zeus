@@ -49,7 +49,7 @@ export interface Mesa {
   y: number
   waitingFor: IngredientType | null
   served: boolean
-  patience: number // ticks restantes até ficar "irritada" (não usado em níveis simples)
+  patience: number 
 }
 
 export interface PlayerState {
@@ -70,11 +70,8 @@ export interface WorldState {
   deliveredCount: number
   burnedCount: number
   money: number
-  /** Total de ticks consumidos pelo mundo (uso interno, cozimento, etc). */
   totalTicks: number
-  /** Vitória sticky: uma vez true, permanece true até reset. */
   victoryReached: boolean
-  /** Tick em que a vitória foi alcançada (pra scoring). */
   victoryAtTick: number
 }
 
@@ -101,14 +98,13 @@ export interface LevelDefinition {
       tableNumber?: number
       item?: string
     }>
-    orderQueue?: string[] // formato "mesa,sabor"
+    orderQueue?: string[] 
   }
   winCondition: string
   referenceSolution: string
   hints: string[]
 }
 
-// Direção -> delta (x, y)
 export const DIRECTION_DELTAS: Record<Direction, { dx: number; dy: number }> = {
   norte: { dx: 0, dy: -1 },
   sul: { dx: 0, dy: 1 },

@@ -1,14 +1,4 @@
-/**
- * CycleRunner — executa código em ciclos durante o dia.
- *
- * Loop principal do modo tycoon. A cada ciclo:
- * 1. Reseta posição do jogador para o spawn
- * 2. Executa o código do jogador do início ao fim
- * 3. Se acabar com sucesso, recomeça
- * 4. Se erro de runtime, para até o fim do dia
- *
- * Mantém limite de ticks por execução pra evitar travamento da UI.
- */
+
 
 import { Interpreter, type StepResult, DEFAULT_LIMITS } from '@engine/interpreter'
 import type { Program } from '@engine/ast'
@@ -41,12 +31,7 @@ export class CycleRunner {
     this.startNewCycle()
   }
 
-  /**
-   * Executa um passo. Pode resultar em:
-   * - tick_progress: avançou normalmente
-   * - cycle_completed: terminou o ciclo, próximo já está no ar
-   * - frozen: erro de runtime, robô travou pelo resto do dia
-   */
+
   step(): CycleResult {
     if (this.frozen) {
       return { kind: 'frozen', error: this.freezeError!, cycleNumber: this.cyclesCompleted }
@@ -85,12 +70,9 @@ export class CycleRunner {
   }
 
   private startNewCycle(): void {
-    // Reset mágico: jogador volta ao spawn, mãos vazias
-    this.world.resetPlayerToSpawn()
-    // Recria o interpreter pra começar do início
+    //this.world.resetPlayerToSpawn()
     this.interpreter = new Interpreter(this.program, this.world, {
       ...DEFAULT_LIMITS,
-      // Tycoon precisa de mais ticks porque o ciclo pode ser longo
       maxTicks: 50_000,
     })
   }

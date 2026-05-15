@@ -36,22 +36,22 @@ const menuManager = new MenuManager({
 menuManager.mount(root)
 
 // Auto-play música ao abrir o navegador
-// Browsers bloqueiam autoplay sem user gesture, então tentamos direto
-// e caso falhe, registramos um listener one-shot na primeira interação
+// playMusic() engole erros de autoplay internamente (.catch),
+// então registramos listeners na primeira interação do usuário
+// incondicionalmente — é a única forma garantida nos browsers modernos.
 ;(async () => {
   await audioManager.initialize()
-  try {
+  // Tenta tocar direto (funciona se o browser permitir autoplay)
+  audioManager.playMusic('theme')
+
+  // Fallback: na primeira interação do usuário, garante que a música comece
+  const ensureMusic = () => {
     audioManager.playMusic('theme')
-  } catch {
-    // Autoplay bloqueado — tocar na primeira interação do usuário
-    const startOnInteraction = () => {
-      audioManager.playMusic('theme')
-      document.removeEventListener('click', startOnInteraction)
-      document.removeEventListener('keydown', startOnInteraction)
-      document.removeEventListener('touchstart', startOnInteraction)
-    }
-    document.addEventListener('click', startOnInteraction, { once: false })
-    document.addEventListener('keydown', startOnInteraction, { once: false })
-    document.addEventListener('touchstart', startOnInteraction, { once: false })
+    document.removeEventListener('click', ensureMusic)
+    document.removeEventListener('keydown', ensureMusic)
+    document.removeEventListener('touchstart', ensureMusic)
   }
+  document.addEventListener('click', ensureMusic)
+  document.addEventListener('keydown', ensureMusic)
+  document.addEventListener('touchstart', ensureMusic)
 })()

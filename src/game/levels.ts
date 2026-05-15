@@ -29,9 +29,7 @@ export const LEVELS: LevelDefinition[] = [
       'Não esqueça das aspas em torno da direção.',
     ],
   },
-  // ============================================================================
-  // NÍVEL 1 - Sequência
-  // ============================================================================
+
   {
     id: 1,
     title: 'Caminho até a mesa',
@@ -64,9 +62,7 @@ export const LEVELS: LevelDefinition[] = [
       'Olhe o mapa antes de planejar a rota.',
     ],
   },
-  // ============================================================================
-  // NÍVEL 2 - Repetição manual cansa
-  // ============================================================================
+
   {
     id: 2,
     title: 'O caminho longo',
@@ -94,9 +90,7 @@ export const LEVELS: LevelDefinition[] = [
       'No próximo nível, você vai aprender uma forma mais inteligente.',
     ],
   },
-  // ============================================================================
-  // NÍVEL 3 - Loop para
-  // ============================================================================
+
   {
     id: 3,
     title: 'Loops salvam o dia',
@@ -123,9 +117,7 @@ export const LEVELS: LevelDefinition[] = [
       'A variável i conta de 1 até 10, e o bloco executa 10 vezes.',
     ],
   },
-  // ============================================================================
-  // NÍVEL 4 - Pegar e entregar
-  // ============================================================================
+
   {
     id: 4,
     title: 'Pegar e entregar',
@@ -157,9 +149,7 @@ export const LEVELS: LevelDefinition[] = [
       'entregar(1) entrega o que está segurando à mesa 1.',
     ],
   },
-  // ============================================================================
-  // NÍVEL 5 - while + multiple orders
-  // ============================================================================
+
   {
     id: 5,
     title: 'Atender enquanto puder',
@@ -192,9 +182,6 @@ export const LEVELS: LevelDefinition[] = [
     ],
   },
 
-  // ============================================================================
-// NÍVEL 6 - Condicionais
-// ============================================================================
 {
   id: 6,
   title: 'Tem pedido aí?',

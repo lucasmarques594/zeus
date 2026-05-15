@@ -1,20 +1,10 @@
-/**
- * Relógio do dia.
- *
- * Responsável por converter tempo real (performance.now) em tempo de jogo
- * (18:00 → 24:00) e detectar fim de dia.
- *
- * Pausável — se o jogador fecha a aba, o tempo decorrido não acumula.
- */
+
 
 import { DAY_CLOCK, dayDurationSeconds, gameSecondsPerRealSecond } from './balance'
 
 export interface DayClockState {
-  /** Dia atual (1-indexed). */
   day: number
-  /** Segundos de jogo decorridos no dia atual (0 a 21600). */
   gameSecondsElapsed: number
-  /** Status do relógio. */
   status: 'pre_day' | 'running' | 'paused' | 'ended'
 }
 
@@ -34,7 +24,6 @@ export class DayClock {
     return this.state
   }
 
-  /** Carrega estado salvo (usado ao restaurar sessão). */
   loadState(state: DayClockState): void {
     this.state = { ...state }
     this.lastTick = null
@@ -59,10 +48,7 @@ export class DayClock {
     }
   }
 
-  /**
-   * Avança o relógio baseado em tempo real decorrido desde a última chamada.
-   * Chamar a cada frame (no game loop). Retorna se o dia acabou neste tick.
-   */
+
   tick(): { ended: boolean; secondsAdded: number } {
     if (this.state.status !== 'running') return { ended: false, secondsAdded: 0 }
 
@@ -88,7 +74,6 @@ export class DayClock {
     return { ended: false, secondsAdded: gameSecondsDelta }
   }
 
-  /** Retorna o relógio atual no formato "HH:MM". */
   getClockDisplay(): string {
     const totalMinutes =
       DAY_CLOCK.startHour * 60 + Math.floor(this.state.gameSecondsElapsed / 60)
@@ -97,19 +82,16 @@ export class DayClock {
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
   }
 
-  /** Progresso 0-1 do dia. */
   getProgress(): number {
     const total = (DAY_CLOCK.endHour - DAY_CLOCK.startHour) * 3600
     return Math.min(1, this.state.gameSecondsElapsed / total)
   }
 
-  /** Quanto falta em segundos reais. */
   getRealSecondsRemaining(): number {
     const totalReal = dayDurationSeconds(this.state.day)
     return Math.max(0, totalReal * (1 - this.getProgress()))
   }
 
-  /** Avança para o próximo dia. Zera o relógio. */
   advanceDay(): void {
     this.state.day++
     this.state.gameSecondsElapsed = 0

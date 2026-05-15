@@ -1,8 +1,3 @@
-/**
- * Sistema centralizado de gerenciamento de áudio
- * Gerencia música de fundo, efeitos sonoros e configurações de volume
- */
-
 export type SoundEffect = 'select' | 'success' | 'error'
 export type MusicTrack = 'theme'
 
@@ -46,14 +41,12 @@ export class AudioManager {
     if (this.initialized) return
 
     try {
-      // Carregar música tema
       const themeMusic = new Audio()
       themeMusic.src = new URL('../assets/audio/Pizzaiolo_Sera.mp3', import.meta.url).href
       themeMusic.loop = true
       themeMusic.volume = this.getMusicVolume()
       this.musicTracks.set('theme', themeMusic)
 
-      // Carregar efeitos sonoros
       const selectSfx = new Audio()
       selectSfx.src = new URL('../assets/audio/UI_SELECT_song.mp3', import.meta.url).href
       selectSfx.volume = this.getSfxVolume()
@@ -81,7 +74,6 @@ export class AudioManager {
     const music = this.musicTracks.get(track)
     if (!music) return
 
-    // Parar música anterior se houver
     if (this.currentMusic && this.currentMusic !== music) {
       this.currentMusic.pause()
       this.currentMusic.currentTime = 0
@@ -122,7 +114,6 @@ export class AudioManager {
     const sound = this.sfxSounds.get(effect)
     if (!sound) return
 
-    // Clone o áudio para permitir múltiplas reproduções simultâneas
     const clone = sound.cloneNode() as HTMLAudioElement
     clone.volume = this.getSfxVolume()
     clone.play().catch((err) => {

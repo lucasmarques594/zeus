@@ -136,10 +136,6 @@ export class GameWorld implements WorldHandle {
     }
   }
 
-  // ============================================================================
-  // Helpers acessíveis pelos built-ins
-  // ============================================================================
-
   getTileInFront(): Tile | null {
     const { dx, dy } = DIRECTION_DELTAS[this.state.player.facing]
     const x = this.state.player.x + dx
@@ -156,11 +152,9 @@ export class GameWorld implements WorldHandle {
     return this.state.mesas.find((m) => m.tableNumber === n) ?? null
   }
 
-  /** Avança o estado do mundo em N ticks (cozimento, etc). */
   advanceTicks(n: number): void {
     for (let i = 0; i < n; i++) {
       this.state.totalTicks++
-      // Atualiza forno: pizza cozinha
       for (const forno of this.state.fornos) {
         if (forno.pizza) {
           forno.pizza.cookTicks++
@@ -173,15 +167,11 @@ export class GameWorld implements WorldHandle {
           }
         }
       }
-      // Checa vitória a cada tick (sticky)
       this.recordWinAttempt()
     }
   }
 
-  /**
-   * Verifica se a condição de vitória do nível foi atingida no instante atual.
-   * Não tem efeito colateral. Use `recordWinAttempt()` para marcar vitória sticky.
-   */
+
   evaluateWinCondition(): boolean {
     const cond = this.level.winCondition
     if (cond.startsWith('player_on_tile_type:')) {
@@ -203,11 +193,7 @@ export class GameWorld implements WorldHandle {
     return false
   }
 
-  /**
-   * Avalia a condição e, se for verdadeira, marca a vitória como alcançada.
-   * Uma vez marcada, fica marcada — vitória é "sticky", não pode ser perdida
-   * por uma ação subsequente do jogador (ex: andar para fora do alvo).
-   */
+
   recordWinAttempt(): void {
     if (!this.state.victoryReached && this.evaluateWinCondition()) {
       this.state.victoryReached = true
@@ -215,15 +201,10 @@ export class GameWorld implements WorldHandle {
     }
   }
 
-  /** Retorna se o jogador já venceu em algum momento da execução. */
   hasWon(): boolean {
     return this.state.victoryReached
   }
 }
-
-// ============================================================================
-// Registry de built-ins
-// ============================================================================
 
 type BuiltinFn = (
   world: GameWorld,
@@ -241,7 +222,6 @@ function register(name: string, fn: BuiltinFn): void {
   BUILTIN_REGISTRY[name] = { name, fn }
 }
 
-// ----- Movimento -----
 
 register('mover', (world, args) => {
   const dir = args[0]
@@ -249,7 +229,6 @@ register('mover', (world, args) => {
     world.addLog('🍕 mover() espera uma direção: "norte", "sul", "leste" ou "oeste".')
     return { result: null, ticks: 1 }
   }
-  // Vira nessa direção primeiro
   world.state.player.facing = dir as Direction
   const tile = world.getTileInFront()
   if (!tile || tile.type === 'parede') {
@@ -282,7 +261,6 @@ register('direcao_atual', (world) => {
   return { result: world.state.player.facing, ticks: 0 }
 })
 
-// ----- Interação -----
 
 register('pegar', (world) => {
   if (world.state.player.holding !== null) {
@@ -296,7 +274,6 @@ register('pegar', (world) => {
     world.advanceTicks(1)
     return { result: false, ticks: 1 }
   }
-  // Balcão com pizza pronta
   if (tile.type === 'balcao' && tile.pizzaReady) {
     world.state.player.holding = 'pizza_pronta'
     const infinite = (tile as Tile & { infinite?: boolean }).infinite
@@ -304,7 +281,6 @@ register('pegar', (world) => {
     world.advanceTicks(1)
     return { result: true, ticks: 1 }
   }
-  // Ingrediente
   if (tile.type === 'ingrediente' && tile.ingredient) {
     world.state.player.holding = tile.ingredient
     world.advanceTicks(1)
@@ -336,10 +312,8 @@ register('peca_em_frente', (world) => {
   return { result: tile.type, ticks: 0 }
 })
 
-// ----- Pizzaria -----
 
 register('ingrediente_em', (world) => {
-  // Sempre olha o tile em frente
   const tile = world.getTileInFront()
   if (!tile || tile.type !== 'ingrediente') return { result: null, ticks: 0 }
   return { result: tile.ingredient ?? null, ticks: 0 }
@@ -353,7 +327,6 @@ register('estado_forno', (world) => {
   return { result: forno.pizza.state, ticks: 0 }
 })
 
-// ----- Pedidos e atendimento -----
 
 register('proximo_pedido', (world) => {
   if (world.state.orderQueue.length === 0) return { result: null, ticks: 0 }
@@ -378,7 +351,6 @@ register('entregar', (world, args) => {
     world.advanceTicks(1)
     return { result: false, ticks: 1 }
   }
-  // Precisa estar adjacente à mesa
   const pdx = Math.abs(world.state.player.x - mesa.x)
   const pdy = Math.abs(world.state.player.y - mesa.y)
   if (pdx + pdy > 1) {
@@ -386,13 +358,10 @@ register('entregar', (world, args) => {
     world.advanceTicks(1)
     return { result: false, ticks: 1 }
   }
-  // Entrega
   world.state.player.holding = null
   mesa.served = true
-  // Remove primeiro pedido dessa mesa da fila
   const idx = world.state.orderQueue.findIndex((o) => o.tableNumber === tableNum)
   if (idx >= 0) world.state.orderQueue.splice(idx, 1)
-  // Atribui próxima ordem dessa mesa, se houver
   const next = world.state.orderQueue.find((o) => o.tableNumber === tableNum)
   if (next) {
     mesa.waitingFor = next.flavor
@@ -401,7 +370,7 @@ register('entregar', (world, args) => {
     mesa.waitingFor = null
   }
   world.state.deliveredCount++
-  world.state.money += 1500 // 15 reais por pizza
+  world.state.money += 1500
   world.advanceTicks(1)
   return { result: true, ticks: 1 }
 })
@@ -416,7 +385,6 @@ register('status_mesa', (world, args) => {
   return { result: 'vazia', ticks: 0 }
 })
 
-// ----- Utilidades -----
 
 register('escrever', (world, args) => {
   const msg = args.map(stringifyValue).join(' ')
